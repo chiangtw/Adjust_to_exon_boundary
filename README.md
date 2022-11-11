@@ -9,19 +9,19 @@ positional arguments:
 
 options:
   -h, --help           show this help message and exit
-  --dist DIST
-  --na_value NA_VALUE
+  --dist DIST          Maximum distances allowed for adjusting positions. (default: 5)
+  --na_value NA_VALUE  Placeholder for na values. (default: 'NA')
 
 ```
 
 ### Example
 
 ```
-$ ./adjust_to_exon_boundary.py annotation.db circRNAs.tsv > circRNAs.adjust.tsv
+# Generate the annotation db
+circmimi_tools gendb annotation.gtf annotation.db
 ```
+
 ```
-$ cat circRNAs.tsv | ./adjust_to_exon_boundary.py annotation.db - > circRNAs.adjust.tsv
+cat circRNAs.tsv | ./adjust_to_exon_boundary.py annotation.db - > circRNAs.adjust.tsv
 ```
-```
-$ cat circRNAs.tsv | ./adjust_to_exon_boundary.py annotation.db - --dist 5 --na_value NA > circRNAs.adjust.tsv
-```
+

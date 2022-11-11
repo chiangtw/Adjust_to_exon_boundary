@@ -99,15 +99,26 @@ def adjust_positions(chrm, pos1, pos2, strand, anno_db, na_value):
 
 
 def create_parser():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter
+    )
     parser.add_argument('anno_db')
     parser.add_argument(
         'region_file',
         type=argparse.FileType('r'),
         help="4-columns TSV file: (chrm, pos1, pos2, strand)"
     )
-    parser.add_argument('--dist', type=int, default=0)
-    parser.add_argument('--na_value', default='NA')
+    parser.add_argument(
+        '--dist',
+        type=int,
+        default=5,
+        help='Maximum distances allowed for adjusting positions.'
+    )
+    parser.add_argument(
+        '--na_value',
+        default="'NA'",
+        help='Placeholder for na values.'
+    )
 
     return parser
 
