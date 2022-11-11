@@ -106,8 +106,8 @@ def create_parser():
         type=argparse.FileType('r'),
         help="4-columns TSV file: (chrm, pos1, pos2, strand)"
     )
-    parser.add_argument('--dist', type=int)
-    parser.add_argument('--na_value', default='')
+    parser.add_argument('--dist', type=int, default=0)
+    parser.add_argument('--na_value', default='NA')
 
     return parser
 
