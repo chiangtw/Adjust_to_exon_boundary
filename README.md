@@ -25,3 +25,6 @@ circmimi_tools gendb annotation.gtf annotation.db
 cat circRNAs.tsv | ./adjust_to_exon_boundary.py annotation.db - > circRNAs.adjust.tsv
 ```
 
+### Note
+
+This tool depends on the [CircMiMi](https://github.com/TreesLab/CircMiMi) package.
