@@ -60,6 +60,44 @@ def read_region_file(region_file_object):
         yield chrm, pos1, pos2, strand, data
 
 
+def adjust_positions(chrm, pos1, pos2, strand, anno_db, na_value):
+
+    if strand == "+":
+        donor_pos, acceptor_pos = pos2, pos1
+    elif strand == "-":
+        donor_pos, acceptor_pos = pos1, pos2
+
+    nearest_donor = anno_db.get_nearest_donor_site(chrm, donor_pos, strand, args.dist + 1)
+    nearest_acceptor = anno_db.get_nearest_acceptor_site(chrm, acceptor_pos, strand, args.dist + 1)
+
+    if nearest_donor:
+        nearest_donor_pos = nearest_donor.junc_site
+        donor_adjust_bases = nearest_donor_pos - donor_pos
+    else:
+        nearest_donor_pos = na_value
+        donor_adjust_bases = na_value
+
+    if nearest_acceptor:
+        nearest_acceptor_pos = nearest_acceptor.junc_site
+        acceptor_adjust_bases = nearest_acceptor_pos - acceptor_pos
+    else:
+        nearest_acceptor_pos = na_value
+        acceptor_adjust_bases = na_value
+
+    if strand == "+":
+        adjust_pos1 = nearest_acceptor_pos
+        adjust_pos2 = nearest_donor_pos
+        pos1_adjust_bases = acceptor_adjust_bases
+        pos2_adjust_bases = donor_adjust_bases
+    elif strand == "-":
+        adjust_pos1 = nearest_donor_pos
+        adjust_pos2 = nearest_acceptor_pos
+        pos1_adjust_bases = donor_adjust_bases
+        pos2_adjust_bases = acceptor_adjust_bases
+
+    return adjust_pos1, adjust_pos2, pos1_adjust_bases, pos2_adjust_bases
+
+
 def create_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('anno_db')
@@ -82,37 +120,7 @@ if __name__ == "__main__":
 
     for chrm, pos1, pos2, strand, data in read_region_file(args.region_file):
 
-        if strand == "+":
-            donor_pos, acceptor_pos = pos2, pos1
-        elif strand == "-":
-            donor_pos, acceptor_pos = pos1, pos2
-
-        nearest_donor = anno_db.get_nearest_donor_site(chrm, donor_pos, strand, args.dist + 1)
-        nearest_acceptor = anno_db.get_nearest_acceptor_site(chrm, acceptor_pos, strand, args.dist + 1)
-
-        if nearest_donor:
-            nearest_donor_pos = nearest_donor.junc_site
-            donor_adjust_bases = nearest_donor_pos - donor_pos
-        else:
-            nearest_donor_pos = args.na_value
-            donor_adjust_bases = args.na_value
-
-        if nearest_acceptor:
-            nearest_acceptor_pos = nearest_acceptor.junc_site
-            acceptor_adjust_bases = nearest_acceptor_pos - acceptor_pos
-        else:
-            nearest_acceptor_pos = args.na_value
-            acceptor_adjust_bases = args.na_value
-
-        if strand == "+":
-            adjust_pos1 = nearest_acceptor_pos
-            adjust_pos2 = nearest_donor_pos
-            pos1_adjust_bases = acceptor_adjust_bases
-            pos2_adjust_bases = donor_adjust_bases
-        elif strand == "-":
-            adjust_pos1 = nearest_donor_pos
-            adjust_pos2 = nearest_acceptor_pos
-            pos1_adjust_bases = donor_adjust_bases
-            pos2_adjust_bases = acceptor_adjust_bases
+        adjust_result = adjust_positions(chrm, pos1, pos2, strand, anno_db, args.na_value)
+        adjust_pos1, adjust_pos2, pos1_adjust_bases, pos2_adjust_bases = adjust_result
 
         print(*data, adjust_pos1, adjust_pos2, pos1_adjust_bases, pos2_adjust_bases, sep='\t', flush=True)
