@@ -50,6 +50,16 @@ class Annotation(AnnotationBase):
         return result
 
 
+def read_region_file(region_file_object):
+    for line in region_file_object:
+        data = line.rstrip('\n').split('\t')
+        chrm, pos1, pos2, strand = data[:4]
+        pos1 = int(pos1)
+        pos2 = int(pos2)
+
+        yield chrm, pos1, pos2, strand, data
+
+
 def create_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('anno_db')
@@ -70,11 +80,7 @@ if __name__ == "__main__":
 
     anno_db = Annotation(args.anno_db)
 
-    for line in args.region_file:
-        data = line.rstrip('\n').split('\t')
-        chrm, pos1, pos2, strand = data[:4]
-        pos1 = int(pos1)
-        pos2 = int(pos2)
+    for chrm, pos1, pos2, strand, data in read_region_file(args.region_file):
 
         if strand == "+":
             donor_pos, acceptor_pos = pos2, pos1
