@@ -116,7 +116,7 @@ def create_parser():
     )
     parser.add_argument(
         '--na_value',
-        default="'NA'",
+        default='NA',
         help='Placeholder for na values.'
     )
 
